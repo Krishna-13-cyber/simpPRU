@@ -3,7 +3,8 @@ supported_models = [
     'TI AM335x BeagleBone Black Wireless',
     'TI AM335x BeagleBone Black',
     'TI AM335x PocketBeagle',
-    'BeagleBoard.org BeagleBone AI'
+    'BeagleBoard.org BeagleBone AI',
+    'TI AM335x BeagleBone Blue'
 ]
 
 running_on_beagle = False

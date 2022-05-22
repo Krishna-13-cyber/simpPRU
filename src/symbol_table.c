@@ -24,7 +24,11 @@ void init_symbol_table()
         case MODEL_BEAGLEBONE_AI:
             json_head = cJSON_Parse(BEAGLEBONEAI_PINOUT);
             break;
-            
+
+        case MODEL_BEAGLEBONE_BLUE:
+            json_head = cJSON_Parse(BEAGLEBONEBLUE_PINOUT);
+            break;
+
         default:    
             json_head = cJSON_Parse(POCKETBEAGLE_PINOUT);
             break;
