@@ -5,9 +5,9 @@ name: Python Tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [ Krishna-13-cyber-GH-Actions ]
   pull_request:
-    branches: [ master ]
+    branches: [ Krishna-13-cyber-GH-Actions ]
 
 permissions:
   contents: read
