@@ -1,3 +1,3 @@
-from testsuite.suite import add 
+from third-party.suite import add 
 def test_add():
     assert add(2,3)==5
