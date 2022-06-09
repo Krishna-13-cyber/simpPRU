@@ -2,9 +2,9 @@ name: Python tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [ Github-Actions-1 ]
   pull_request:
-    branches: [ master ]
+    branches: [ Github-Actions-1 ]
 
 jobs:
   build:
