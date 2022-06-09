@@ -19,9 +19,8 @@ jobs:
               'TI AM335x BeagleBone Black',
               'TI AM335x PocketBeagle',
               'BeagleBoard.org BeagleBone AI'
-          ]
-
-          running_on_beagle = False
+                              ]
+            running_on_beagle = False
 
           try:
               with open("/proc/device-tree/model") as file:
