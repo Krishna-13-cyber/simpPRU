@@ -8,10 +8,12 @@ jobs:
       - name: Inside Build 
       - run:  |
           mkdir build 
+      - run:  |       
           cd build 
       - name: Building the project
       - run:  |
           cmake .. 
+      - run:  |
           make
   test:
     runs-on: ubuntu-latest
