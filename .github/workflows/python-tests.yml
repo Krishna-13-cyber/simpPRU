@@ -2,9 +2,20 @@ name: PyTest
 on: push
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inside Build 
+      - run:  |
+          mkdir build 
+          cd build 
+      - name: Building the project
+      - run:  |
+          cmake .. 
+          make
   test:
     runs-on: ubuntu-latest
-
+    needs: build
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
