@@ -1,45 +1,75 @@
-name: PyTest
-on: push
+name: Run Script
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Inside Build 
-      - run:  |
-          mkdir build 
-      - run:  |       
-          cd build 
-      - name: Building the project
-      - run:  |
-          cmake .. 
-      - run:  |
-          make
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
-          python-version: "3.x"
+          script: |
+           supported_models = [
+              'TI AM335x BeagleBone Black Wireless',
+              'TI AM335x BeagleBone Black',
+              'TI AM335x PocketBeagle',
+              'BeagleBoard.org BeagleBone AI'
+          ]
 
-      - name: Install pipenv
-        run: |
-          python -m pip install --upgrade pipenv wheel
-      - id: cache-pipenv
-        uses: actions/cache@v1
-        with:
-          path: ~/.local/share/virtualenvs
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+          running_on_beagle = False
 
-      - name: Install dependencies
-        if: steps.cache-pipenv.outputs.cache-hit != 'true'
-        run: |
-          pipenv install --deploy --dev
-      - name: Run test suite
-        run: |
-          pipenv run pytest
+          try:
+              with open("/proc/device-tree/model") as file:
+                  model = file.read(100).strip()
+                  if model in supported_models:
+                      print("Detected: ", model)
+                      running_on_beagle = True
+          except OSError:
+              print("Not running on a BeagleBone")
+
+          import subprocess
+          from fnmatch import fnmatch
+          import os
+
+          for file in os.listdir("tests/run_anywhere"):
+              if fnmatch(file, "*.sim"):
+                  print("Running test ", file)
+
+                  transpile_output = subprocess.run(f"bin/simppru-1.4 --preprocess -t tests/run_anywhere/{file}", shell=True, capture_output=True)
+
+                  if transpile_output.returncode != 0:
+                      print(f"**** ****TEST FAILED**** ****: {file}")
+                      print("stdout:\n", transpile_output.stdout.decode("utf-8"), sep='')
+                      print("stderr:\n", transpile_output.stderr.decode("utf-8"), sep='')
+                      continue
+
+                  compile_output = subprocess.run(f"gcc -o tests/run_anywhere/{file}.out /tmp/temp.c", shell=True, capture_output=True)
+
+                  if compile_output.returncode != 0:
+                      print(f"**** ****TEST FAILED**** ****: {file}")
+                      print("stdout:\n", compile_output.stdout.decode("utf-8"), sep='')
+                      print("stderr:\n", compile_output.stderr.decode("utf-8"), sep='')
+                      continue
+
+                  run_output = subprocess.run(f"tests/run_anywhere/{file}.out", shell=True, capture_output=True)
+
+                  if run_output.returncode != 0:
+                      print(f"**** ****TEST FAILED**** ****: {file}")
+                      print("stdout:\n", run_output.stdout.decode("utf-8"), sep='')
+                      print("stderr:\n", run_output.stderr.decode("utf-8"), sep='')
+                      continue
+                  else:
+                      output = run_output.stdout
+                  
+                  with open(f"tests/run_anywhere/{file}.output", 'r+b') as out:
+                      expected_output = out.read()
+
+                  if output != expected_output:
+                      print(f"**** ****TEST FAILED**** ****: {file}")
+                  else:
+                      print(f"Test {file} passed")
