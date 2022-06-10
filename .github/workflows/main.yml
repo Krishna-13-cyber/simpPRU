@@ -25,6 +25,8 @@ jobs:
           pip install -r requirements.txt
       - name: Update
         run: sudo apt-get update   
+      - name: Prerequisites
+        run: sudo apt-get install build-essential libmpfr-dev libgmp-dev libmpc-dev texinfo libncurses5-dev bison flex
       - name: Install pru-gcc dependencies
         run: sudo apt-get install -y gcc-pru gnuprumcu
       - name: "Create build directory and run CMake"
