@@ -23,6 +23,8 @@ jobs:
           python -m pip install --upgrade pip --upgrade pipenv wheel
           pip install numpy
           pip install -r requirements.txt
+      - name: Install pru-gcc dependencies
+        run: sudo apt-get install -y gcc-pru gnuprumcu
       - name: "Create build directory and run CMake"
         run: cmake -S . -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
       - name: "Build Project" 
