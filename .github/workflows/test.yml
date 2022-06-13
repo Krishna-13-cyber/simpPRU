@@ -31,8 +31,6 @@ jobs:
             - name: Execute py script
               run: python test.py
 
-
-
     build_simppru_job2:
         runs-on: ubuntu-latest
         name: This will build simppru on arm32 machine
