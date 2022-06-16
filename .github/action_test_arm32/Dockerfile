@@ -1,4 +1,10 @@
-FROM arm32v7/python:2
+FROM simppru/arm32-build-image:latest
+
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+
+FROM arm32v7/python:3
 
 WORKDIR /usr/src/app
 COPY requirements.txt ./
