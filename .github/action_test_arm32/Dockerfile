@@ -1,6 +1,8 @@
 FROM arm32v7/python:2
 
-COPY requirements.txt ./requirements.txt
+WORKDIR /usr/src/app
+COPY requirements.txt ./
+COPY test.py ./
 
 RUN python -m pip install --upgrade pip --upgrade pipenv wheel
 RUN pip install numpy
