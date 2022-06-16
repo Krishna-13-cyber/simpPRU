@@ -26,6 +26,6 @@ jobs:
                 pip install numpy
                 pip install -r requirements.txt  
             - name: Adding armhf path
-              run: sudo ln -s /usr/arm-linux-gnueabihf/lib/ld-linux-armhf.so.3 /usr/lib/ld-linux-armhf.so.3 
+              run: ln -s /lib/arm-linux-gnueabihf/ld-linux.so.3 /lib/ld-linux.so.3
             - name: Executing Python script
               run: python test.py
