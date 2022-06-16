@@ -1,4 +1,5 @@
 FROM arm32v7/python:3.7-slim-buster
+RUN apt-get update && apt-get -y install make && apt-get -y install cmake protobuf-compiler
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
