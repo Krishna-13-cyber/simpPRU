@@ -3,14 +3,31 @@ name: Python testsuite
 on: [push, pull_request]
     
 jobs:
+    build_arm32:
+        runs-on: ubuntu-latest
+        name: This will build simppru debian package for arm32
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+            - name: preconfig
+              run: sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+            - name: build inside docker arm32
+              uses: ./.github/action_build_arm32
+            - name: upload arm32 package to artifacts
+              uses: actions/upload-artifact@v2
+
     test_simppru_arm32:
         runs-on: ubuntu-latest
         name: This will build simppru on arm32 machine
+        needs: [ build_arm32 ] 
         steps: 
             - name: Checkout
               uses: actions/checkout@v2
             - name: Preconfig
               run: sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+            - name: Download artifacts arm32
+              id:  arm32-artifact-download
+              uses: actions/download-artifact@v2             
             - name: Test for arm32(v7)
               uses: ./.github/action_test_arm32           
             - name: Postconfig
