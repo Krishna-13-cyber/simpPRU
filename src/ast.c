@@ -200,7 +200,7 @@ ast_node_range_expression *create_range_expression_node(ast_node_expression *sta
     return exp;
 }
 
-ast_node_constant *create_constant_node(int data_type, int value)
+ast_node_constant *create_constant_node(char *data_type, char *value)
 {
     ast_node_constant *cnst = (ast_node_constant*)malloc(sizeof(ast_node_constant)); 
 

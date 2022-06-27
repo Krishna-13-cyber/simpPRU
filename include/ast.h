@@ -244,9 +244,9 @@ struct ast_node_range_expression
  struct ast_node_constant
 {
     int node_type;
-    int data_type;
+    char* data_type;
 
-    int value;
+    char* value;
 };
 
  struct ast_node_variable
@@ -367,7 +367,7 @@ ast_node_array_assignment *create_array_assignment_node(sym_ptr symbol, ast_node
 ast_node_array_access *create_array_access_node(sym_ptr symbol, ast_node_expression *index);
 ast_node_expression *create_expression_node(int node_type, int opt, int value, ast_node *left, ast_node *right);
 ast_node_range_expression *create_range_expression_node(ast_node_expression *start, ast_node_expression *stop, ast_node_expression *increment);
-ast_node_constant *create_constant_node(int data_type, int value);
+ast_node_constant *create_constant_node(char *data_type, char *value);
 ast_node_variable *create_variable_node(int data_type, sym_ptr symbol);
 ast_node_conditional_if *create_conditional_if_node(ast_node_expression *condition, ast_node_compound_statement *body, ast_node_conditional_else_if *else_if, ast_node_compound_statement *else_node);
 ast_node_conditional_else_if *create_else_if_node();

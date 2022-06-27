@@ -288,7 +288,7 @@ void ast_expression_printer(ast_node_expression* node, FILE* handle)
 
         if (node->opt == AST_NODE_CONSTANT)
         {
-            fprintf(handle, " %d ", node->value);
+            fprintf(handle, " %s ", node->value);
         }
 
         if (node->opt == AST_NODE_CONSTANT_CHAR)
