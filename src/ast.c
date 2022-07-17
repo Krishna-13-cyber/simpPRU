@@ -222,7 +222,7 @@ ast_node_variable *create_variable_node(int data_type, sym_ptr symbol)
     return var;
 }
 
-ast_node_conditional_if *create_conditional_if_node(ast_node_expression *condition, ast_node_compound_statement *body, ast_node_conditional_else_if *else_if, ast_node_compound_statement *else_node)
+ast_node_conditional_if *create_conditional_if_node(ast_node_expression *condition, ast_node_compound_statement *body, ast_node_conditional_else_if *else_if, ast_node_compound_statement *else_node,ast_node_expression *return_stmt1,ast_node_expression *return_stmt2)
 {
     ast_node_conditional_if *cond_if = (ast_node_conditional_if*)malloc(sizeof(ast_node_conditional_if));
 
@@ -231,7 +231,8 @@ ast_node_conditional_if *create_conditional_if_node(ast_node_expression *conditi
     cond_if->body = body;
     cond_if->else_if = else_if;
     cond_if->else_part = else_node;
-
+    cond_if->return_stmt1= return_stmt1;
+    cond_if->return_stmt2= return_stmt2;
     return cond_if;
 }
 
@@ -245,7 +246,7 @@ ast_node_conditional_else_if *create_else_if_node()
     return cond_else_if;
 }
 
-ast_node_conditional_else_if *add_else_if_node(ast_node_conditional_else_if *parent, ast_node_expression *condition, ast_node_compound_statement *body)
+ast_node_conditional_else_if *add_else_if_node(ast_node_conditional_else_if *parent, ast_node_expression *condition, ast_node_compound_statement *body,ast_node_expression *return_stmt1)
 {
     ast_node_conditional_if *temp = (ast_node_conditional_if*)malloc(sizeof(ast_node_conditional_if));
 
@@ -254,6 +255,7 @@ ast_node_conditional_else_if *add_else_if_node(ast_node_conditional_else_if *par
     temp->body = body;
     temp->else_if = NULL;
     temp->else_part = NULL;
+    temp->return_stmt1= return_stmt1;
 
     vec_push(&parent->else_if, temp);
 

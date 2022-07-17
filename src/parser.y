@@ -102,7 +102,7 @@ ast_node *ast = NULL;
 
 %type <node> translation_unit program
 %type <statements> statement
-%type <compound_statement> statement_list compound_statement conditional_statement_else
+%type <compound_statement> statement_list compound_statement 
 %type <declaration> declaration declaration_assignment
 %type <array_declaration> array_declaration array_declaration_assignment
 %type <assignment> assignment
@@ -731,29 +731,33 @@ logical_expression: OPR_LGL_NOT boolean_expression {
           }
           ;
 
-conditional_statement: KW_IF COLON boolean_expression compound_statement conditional_statement_else_if conditional_statement_else {
+conditional_statement: KW_IF COLON boolean_expression compound_statement conditional_statement_else_if KW_ELSE compound_statement {
                           printf("inside if\n");
-                          $$ = create_conditional_if_node($3, $4, $5, $6);
-                     }
-                     ;  
+                          $$ = create_conditional_if_node($3, $4, $5, $7, NULL, NULL);
+                          }
+                        | KW_IF COLON boolean_expression compound_statement conditional_statement_else_if KW_ELSE compound_statement {
+                        $$ = create_conditional_if_node($3, $4, $5, $7,vec_pop(&$4->child_nodes)->child_nodes.return_statement,vec_pop(&$7->child_nodes)->child_nodes.return_statement);
+                        }
+                        | KW_IF COLON boolean_expression compound_statement   {
+                           $$ = create_conditional_if_node($3, $4,NULL, NULL,NULL,NULL);
+                        } 
+                        |  KW_IF COLON boolean_expression compound_statement KW_ELSE compound_statement   {
+                           $$ = create_conditional_if_node($3, $4, NULL, $6,NULL,vec_pop(&$6->child_nodes)->child_nodes.return_statement);
+                        } 
+                        ;  
 
 conditional_statement_else_if: conditional_statement_else_if KW_ELIF COLON boolean_expression compound_statement {
                                  printf("inside else if\n");
-                                 $$ = add_else_if_node($1, $4, $5);
+                                 $$ = add_else_if_node($1, $4, $5, NULL);
+                             }
+                             | conditional_statement_else_if KW_ELIF COLON boolean_expression compound_statement {
+                                  $$ = add_else_if_node($1, $4, $5,vec_pop(&$5->child_nodes)->child_nodes.return_statement);
                              }
                              | /* empty */    {
                                  $$ = create_else_if_node();
                              }
                              ;
 
-conditional_statement_else: KW_ELSE compound_statement {
-                              printf("inside else\n");
-                              $$ = $2;
-                          }
-                          | /* empty */ {
-                              $$ = NULL;
-                          }
-                          ;
 
 loop_statement_for: KW_FOR COLON IDENTIFIER {
                       $3->data_type = DT_INTEGER;}                    
@@ -804,6 +808,31 @@ function_definition: KW_DEF IDENTIFIER COLON DT_INT {
                        }
                        printf("func\n");
                    }
+                    | KW_DEF IDENTIFIER COLON DT_INT {
+                       if ($2 == NULL){yyerror("function name already defined");}
+                       temp = $2; temp->data_type = DT_INTEGER;} 
+                   COLON parameters compound_statement {
+                       if (vec_last(&$8->child_nodes)->node_type == AST_NODE_FUNC_RETURN)
+                       {
+                           $$ = create_function_def_node($2, $7, $8, vec_pop(&$8->child_nodes)->child_nodes.return_statement);
+                       }
+                       else if (vec_last(&$8->child_nodes)->node_type != AST_NODE_FUNC_RETURN && $2->data_type == DT_VOID_)
+                       {
+                           $$ = create_function_def_node($2, $7, $8, NULL);
+                       }
+                       else if (vec_last(&$8->child_nodes)->node_type != AST_NODE_FUNC_RETURN && $2->data_type != DT_VOID_)
+                       {
+                           yyerror("return statement missing in a non void function");
+                       }
+                       temp = NULL;
+                       
+                       if (check_function_definition($$) == -1)
+                       {
+                          yyerror("return statement different from return type");
+                       }
+                       printf("func\n");
+                   }
+                   
                    | KW_DEF IDENTIFIER COLON DT_BOOL {
                        if ($2 == NULL){yyerror("function name already defined");}
                        temp = $2; temp->data_type = DT_BOOLEAN;} 

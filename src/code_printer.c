@@ -344,7 +344,13 @@ void ast_conditional_if_printer(ast_node_conditional_if *node, FILE* handle)
         ast_expression_printer(node->condition, handle);
         fprintf(handle, "%s", ")\n");
         ast_compound_statement_printer(node->body, handle, 0);
-
+        ast_expression_printer(node->return_stmt1, handle);
+        if (node->return_stmt1 != NULL)
+        {
+            fprintf(handle, "\t%s ", "return");
+            ast_expression_printer(node->return_stmt1, handle);
+            fprintf(handle, "%s", ";\n");
+        }
         if (node->else_if != NULL)
         {
             int i;
@@ -355,7 +361,12 @@ void ast_conditional_if_printer(ast_node_conditional_if *node, FILE* handle)
                 ast_expression_printer(temp->condition, handle);
                 fprintf(handle, "%s", ")\n");
                 ast_compound_statement_printer(temp->body, handle, 0);
-
+                if (temp->return_stmt1 != NULL)
+                {
+                    fprintf(handle, "\t%s ", "return");
+                    ast_expression_printer(temp->return_stmt1, handle);
+                    fprintf(handle, "%s", ";\n");
+                }                
             }
         }
 
@@ -363,6 +374,12 @@ void ast_conditional_if_printer(ast_node_conditional_if *node, FILE* handle)
         {
             fprintf(handle, "\t%s\n", "else");
             ast_compound_statement_printer(node->else_part, handle, 0);
+            if (node->return_stmt2 != NULL)
+                {
+                    fprintf(handle, "\t%s ", "return");
+                    ast_expression_printer(node->return_stmt2, handle);
+                    fprintf(handle, "%s", ";\n");
+                }          
         }
     }
 }

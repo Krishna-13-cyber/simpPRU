@@ -265,6 +265,8 @@ struct ast_node_range_expression
     ast_node_compound_statement *body;
     ast_node_conditional_else_if *else_if;
     ast_node_compound_statement *else_part;
+    ast_node_expression *return_stmt1;
+    ast_node_expression *return_stmt2;
 };
 
  struct ast_node_conditional_else_if
@@ -369,9 +371,9 @@ ast_node_expression *create_expression_node(int node_type, int opt, int value, a
 ast_node_range_expression *create_range_expression_node(ast_node_expression *start, ast_node_expression *stop, ast_node_expression *increment);
 ast_node_constant *create_constant_node(int data_type, int value);
 ast_node_variable *create_variable_node(int data_type, sym_ptr symbol);
-ast_node_conditional_if *create_conditional_if_node(ast_node_expression *condition, ast_node_compound_statement *body, ast_node_conditional_else_if *else_if, ast_node_compound_statement *else_node);
+ast_node_conditional_if *create_conditional_if_node(ast_node_expression *condition, ast_node_compound_statement *body, ast_node_conditional_else_if *else_if, ast_node_compound_statement *else_node,ast_node_expression *return_stmt1,ast_node_expression *return_stmt2);
 ast_node_conditional_else_if *create_else_if_node();
-ast_node_conditional_else_if *add_else_if_node(ast_node_conditional_else_if *parent, ast_node_expression *condition, ast_node_compound_statement *body);
+ast_node_conditional_else_if *add_else_if_node(ast_node_conditional_else_if *parent, ast_node_expression *condition, ast_node_compound_statement *body,ast_node_expression *return_stmt1);
 ast_node_loop_for *create_loop_for_node(ast_node_variable *init, ast_node_range_expression *range, ast_node_compound_statement *body);
 ast_node_loop_while *create_loop_while_node(ast_node_expression *condition, ast_node_compound_statement *body);
 ast_node_loop_control *create_loop_control_node(int node_type);
