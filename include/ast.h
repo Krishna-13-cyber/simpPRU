@@ -26,6 +26,8 @@
 #define AST_NODE_VARIABLE            13
 #define AST_NODE_CONDITIONAL_IF      14
 #define AST_NODE_CONDITIONAL_ELSE_IF 15
+#define AST_NODE_CONDITIONAL_IF_RETURN    14000
+#define AST_NODE_CONDITIONAL_ELSE_IF_RETURN    14001
 #define AST_NODE_LOOP_FOR            16
 #define AST_NODE_LOOP_WHILE          17
 #define AST_NODE_LOOP_CONTROL        18
@@ -91,6 +93,7 @@
 typedef vec_t(struct ast_node*) ast_nodes;
 typedef vec_t(struct ast_node_statements*) ast_nodes_statements;
 typedef vec_t(struct ast_node_conditional_if*) ast_nodes_else_if;
+typedef vec_t(struct ast_node_conditional_if_return*) ast_nodes_else_if_return;
 typedef vec_t(struct ast_node_variable*) ast_nodes_variables;
 typedef vec_t(struct ast_node_expression*) ast_nodes_expressions;
 
@@ -108,6 +111,8 @@ struct ast_node_constant;
 struct ast_node_variable;
 struct ast_node_conditional_if;
 struct ast_node_conditional_else_if;
+struct ast_node_conditional_if_return;
+struct ast_node_conditional_else_if_return;
 struct ast_node_loop_for;
 struct ast_node_loop_while;
 struct ast_node_loop_control;
@@ -133,6 +138,8 @@ typedef struct ast_node_constant ast_node_constant;
 typedef struct ast_node_variable ast_node_variable;
 typedef struct ast_node_conditional_if ast_node_conditional_if;
 typedef struct ast_node_conditional_else_if ast_node_conditional_else_if;
+typedef struct ast_node_conditional_if_return ast_node_conditional_if_return;
+typedef struct ast_node_conditional_else_if_return ast_node_conditional_else_if_return;
 typedef struct ast_node_loop_for ast_node_loop_for;
 typedef struct ast_node_loop_while ast_node_loop_while;
 typedef struct ast_node_loop_control ast_node_loop_control;
@@ -162,6 +169,7 @@ struct ast_node
         ast_node_assignment *assignment;
         ast_node_array_assignment *array_assignment;
         ast_node_conditional_if *if_else;
+        ast_node_conditional_if_return *if_else_return;
         ast_node_loop_for *loop_for;
         ast_node_loop_while *loop_while;
         ast_node_loop_control *loop_control;
@@ -274,6 +282,25 @@ struct ast_node_range_expression
     ast_nodes_else_if else_if;
 };
 
+ struct ast_node_conditional_if_return
+{
+    int node_type;
+
+    ast_node_expression *condition;
+    ast_node_compound_statement *body;
+    ast_node_conditional_else_if_return *else_if;
+    ast_node_compound_statement *else_part;
+    ast_node_expression *return_stmt1;
+    ast_node_expression *return_stmt2;
+};
+
+ struct ast_node_conditional_else_if_return
+{
+    int node_type;
+
+    ast_nodes_else_if_return else_if;
+};
+
  struct ast_node_loop_for
 {
     int node_type;
@@ -369,6 +396,9 @@ ast_node_expression *create_expression_node(int node_type, int opt, int value, a
 ast_node_range_expression *create_range_expression_node(ast_node_expression *start, ast_node_expression *stop, ast_node_expression *increment);
 ast_node_constant *create_constant_node(int data_type, int value);
 ast_node_variable *create_variable_node(int data_type, sym_ptr symbol);
+ast_node_conditional_if_return *create_conditional_if_return_node(ast_node_expression *condition, ast_node_compound_statement *body, ast_node_conditional_else_if_return *else_if, ast_node_compound_statement *else_node,ast_node_expression *return_stmt1,ast_node_expression *return_stmt2);
+ast_node_conditional_else_if_return *create_else_if_return_node();
+ast_node_conditional_else_if_return *add_else_if_return_node(ast_node_conditional_else_if_return *parent, ast_node_expression *condition, ast_node_compound_statement *body,ast_node_expression *return_stmt1);
 ast_node_conditional_if *create_conditional_if_node(ast_node_expression *condition, ast_node_compound_statement *body, ast_node_conditional_else_if *else_if, ast_node_compound_statement *else_node);
 ast_node_conditional_else_if *create_else_if_node();
 ast_node_conditional_else_if *add_else_if_node(ast_node_conditional_else_if *parent, ast_node_expression *condition, ast_node_compound_statement *body);

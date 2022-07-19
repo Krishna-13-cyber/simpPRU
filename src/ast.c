@@ -47,7 +47,11 @@ ast_node_statements *create_statement_node(int node_type, void *child)
         case AST_NODE_CONDITIONAL_IF:
             stmt->child_nodes.if_else = child;
             break;
-        
+
+        case AST_NODE_CONDITIONAL_IF_RETURN:
+            stmt->child_nodes.if_else_return = child;
+            break;
+
         case AST_NODE_LOOP_FOR:
             stmt->child_nodes.loop_for = child;
             break;
@@ -254,6 +258,47 @@ ast_node_conditional_else_if *add_else_if_node(ast_node_conditional_else_if *par
     temp->body = body;
     temp->else_if = NULL;
     temp->else_part = NULL;
+
+    vec_push(&parent->else_if, temp);
+
+    return parent;
+}
+
+ast_node_conditional_if_return *create_conditional_if_return_node(ast_node_expression *condition, ast_node_compound_statement *body, ast_node_conditional_else_if_return *else_if, ast_node_compound_statement *else_node,ast_node_expression *return_stmt1,ast_node_expression *return_stmt2)
+{
+    ast_node_conditional_if_return *cond_if_return = (ast_node_conditional_if_return*)malloc(sizeof(ast_node_conditional_if_return));
+
+    cond_if_return->node_type = AST_NODE_CONDITIONAL_IF_RETURN;
+    cond_if_return->condition = condition;
+    cond_if_return->body = body;
+    cond_if_return->else_if = else_if;
+    cond_if_return->else_part = else_node;
+    cond_if_return->return_stmt1= return_stmt1;
+    cond_if_return->return_stmt2= return_stmt2;
+
+    return cond_if_return;
+}
+
+ast_node_conditional_else_if_return *create_else_if_return_node()
+{
+    ast_node_conditional_else_if_return *cond_else_if_return = (ast_node_conditional_else_if_return*)malloc(sizeof(ast_node_conditional_else_if_return));
+
+    cond_else_if_return->node_type = AST_NODE_CONDITIONAL_ELSE_IF_RETURN;
+    vec_init(&cond_else_if_return->else_if);
+
+    return cond_else_if_return;
+}
+
+ast_node_conditional_else_if_return *add_else_if_return_node(ast_node_conditional_else_if_return *parent, ast_node_expression *condition, ast_node_compound_statement *body,ast_node_expression *return_stmt1)
+{
+    ast_node_conditional_if_return *temp = (ast_node_conditional_if_return*)malloc(sizeof(ast_node_conditional_if_return));
+
+    temp->node_type = AST_NODE_CONDITIONAL_ELSE_IF_RETURN;
+    temp->condition = condition;
+    temp->body = body;
+    temp->else_if = NULL;
+    temp->else_part = NULL;
+    temp->return_stmt1= return_stmt1;
 
     vec_push(&parent->else_if, temp);
 

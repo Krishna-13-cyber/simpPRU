@@ -2,6 +2,7 @@
 
 static int rpmsg_artifact_found = 0;
 static char pru_id_[5] = "pru0";
+static int a=0;
 
 void ast_compound_statement_printer(ast_node_compound_statement *cmpd_stmt, FILE* handle, int is_func_def)
 {
@@ -34,7 +35,12 @@ void ast_compound_statement_printer(ast_node_compound_statement *cmpd_stmt, FILE
                 break;
             
             case AST_NODE_CONDITIONAL_IF:
+                a++;    
                 ast_conditional_if_printer(((ast_node_statements*)temp)->child_nodes.if_else, handle); 
+                break;
+
+            case AST_NODE_CONDITIONAL_IF_RETURN:
+                ast_conditional_if_return_printer(((ast_node_statements*)temp)->child_nodes.if_else_return, handle); 
                 break;
         
             case AST_NODE_LOOP_FOR:
@@ -93,9 +99,12 @@ void ast_compound_statement_printer(ast_node_compound_statement *cmpd_stmt, FILE
                 break;
         }
     }
-    if (is_func_def == 0)
+    if (is_func_def == 0 & a==0)
     {
         fprintf(handle, "%s", "}\n");
+    }
+    if(a>0){
+       fprintf(handle, "%s", "\n"); 
     }
 }
 
@@ -366,6 +375,71 @@ void ast_conditional_if_printer(ast_node_conditional_if *node, FILE* handle)
         }
     }
 }
+
+void ast_conditional_if_return_printer(ast_node_conditional_if_return *node, FILE* handle)
+{
+    if (node != NULL && handle != NULL)
+    {
+        fprintf(handle, "\t%s", "if");
+        ast_expression_printer(node->condition, handle);
+        fprintf(handle, "%s", "\n");
+        if (node->return_stmt1 != NULL)
+        {
+            ast_compound_statement_printer(node->body, handle, 0);
+            fprintf(handle,"return");
+            ast_expression_printer(node->return_stmt1, handle);
+            fprintf(handle, "%s", ";\n");
+            fprintf(handle, "}\n");
+        }
+        if (node->return_stmt1 != NULL)
+        {
+            ast_compound_statement_printer(node->body, handle, 0);
+
+        }        
+        if (node->else_if != NULL)
+        {
+            int i;
+            ast_node_conditional_if_return *temp;
+            vec_foreach(&node->else_if->else_if, temp, i)
+            {
+                fprintf(handle, "\t%s(", "else if");
+                ast_expression_printer(temp->condition, handle);
+                fprintf(handle, "%s", ")\n");
+                if (temp->return_stmt1 != NULL)
+                {
+                    ast_compound_statement_printer(temp->body, handle, 0);
+                    fprintf(handle, "return");
+                    ast_expression_printer(temp->return_stmt1, handle);
+                    fprintf(handle, "%s", ";\n");
+                    fprintf(handle, "}\n");
+                }
+                if (temp->return_stmt1 == NULL)   
+                {
+                    ast_compound_statement_printer(temp->body, handle, 0);    
+                }            
+            }
+        }
+
+        if (node->else_part != NULL)
+        {
+            if (node->return_stmt2 != NULL)
+                {
+                    fprintf(handle, "\t%s\n", "else ");
+                    ast_compound_statement_printer(node->else_part, handle, 0);
+                    fprintf(handle, "return");
+                    ast_expression_printer(node->return_stmt2, handle);
+                    fprintf(handle, "%s", ";\n");
+                    fprintf(handle, "}\n");
+                }
+            if(node->return_stmt2 == NULL) 
+            {
+            fprintf(handle, "\t%s\n", "else");
+            ast_compound_statement_printer(node->else_part, handle, 0);
+            }         
+        }
+    }
+}
+
 void ast_loop_for_printer(ast_node_loop_for *node, FILE* handle)
 {
     if (node != NULL && handle != NULL)

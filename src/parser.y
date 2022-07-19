@@ -41,6 +41,8 @@ ast_node *ast = NULL;
     struct ast_node_variable *variable;
     struct ast_node_conditional_if *conditional_if;
     struct ast_node_conditional_else_if *conditional_else_if;
+    struct ast_node_conditional_if_return *conditional_if_return;
+    struct ast_node_conditional_else_if_return *conditional_else_if_return;      
     struct ast_node_loop_for *loop_for;
     struct ast_node_loop_while *loop_while;
     struct ast_node_loop_control *loop_control;
@@ -112,6 +114,8 @@ ast_node *ast = NULL;
 %type <array_access> arithmetic_array_access boolean_array_access
 %type <conditional_if> conditional_statement
 %type <conditional_else_if> conditional_statement_else_if
+%type <conditional_if_return> conditional_statement_return
+%type <conditional_else_if_return> conditional_statement_else_if_return
 %type <loop_for> loop_statement_for
 %type <loop_while> loop_statement_while
 %type <function_def> function_definition 
@@ -188,6 +192,9 @@ statement: compound_statement {
          }
          | conditional_statement {
              $$ = create_statement_node(AST_NODE_CONDITIONAL_IF, (void*)$1);
+         }
+         | conditional_statement_return {
+             $$ = create_statement_node(AST_NODE_CONDITIONAL_IF_RETURN, (void*)$1);
          }
          | loop_statement_for {
              $$ = create_statement_node(AST_NODE_LOOP_FOR, (void*)$1);
@@ -743,6 +750,21 @@ conditional_statement_else_if: conditional_statement_else_if KW_ELIF COLON boole
                              }
                              | /* empty */    {
                                  $$ = create_else_if_node();
+                             }
+                             ;
+
+conditional_statement_return: KW_IF COLON boolean_expression compound_statement conditional_statement_else_if KW_ELSE compound_statement {
+                          printf("inside if\n");
+                          $$ = create_conditional_if_return_node($3, $4, $5, $7, vec_pop(&$4->child_nodes)->child_nodes.return_statement,vec_pop(&$7->child_nodes)->child_nodes.return_statement);
+                     }
+                     ;  
+
+conditional_statement_else_if_return: conditional_statement_else_if_return KW_ELIF COLON boolean_expression compound_statement {
+                                 printf("inside else if\n");
+                                 $$ = add_else_if_return_node($1, $4, $5,vec_pop(&$5->child_nodes)->child_nodes.return_statement);
+                             }
+                             | /* empty */    {
+                                 $$ = create_else_if_return_node();
                              }
                              ;
 
