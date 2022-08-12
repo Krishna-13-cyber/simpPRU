@@ -31,7 +31,11 @@ int config_pins(int pru_pin_number, int mode, char* pru_id)
         case MODEL_BEAGLEBONE_AI:
             json_head = cJSON_Parse(BEAGLEBONEAI_PINOUT);
             break;
-            
+
+        case MODEL_BEAGLEBONE_AI_64:
+            json_head = cJSON_Parse(BEAGLEBONEAI_64_PINOUT);
+            break;
+
         default:    
             json_head = cJSON_Parse(POCKETBEAGLE_PINOUT);
             break;
@@ -169,6 +173,11 @@ int set_device_model(int model_bb)
         else if (!strcmp(model_name, "BeagleBoard.org BeagleBone AI"))
         {
             model_beaglebone = MODEL_BEAGLEBONE_AI;
+            printf("Detected %s\n", model_name);
+        }
+        else if (!strcmp(model_name, "BeagleBoard.org BeagleBone AI-64"))
+        {
+            model_beaglebone = MODEL_BEAGLEBONE_AI_64;
             printf("Detected %s\n", model_name);
         }
         else

@@ -39,6 +39,11 @@ int firmware_loader(char* output_filename, int pru_id)
         model_beaglebone_ = MODEL_BEAGLEBONE_AI;
         printf("Detected %s\n", model_name);
     }
+    else if (!strcmp(model_name, "BeagleBoard.org BeagleBone AI-64"))
+    {
+        model_beaglebone_ = MODEL_BEAGLEBONE_AI_64;
+        printf("Detected %s\n", model_name);
+    }
     else
     {
         model_beaglebone_ = MODEL_POCKETBEAGLE;
@@ -54,6 +59,14 @@ int firmware_loader(char* output_filename, int pru_id)
             return -1;
         }
     }
+    else if (model_beaglebone_ == MODEL_BEAGLEBONE_AI_64)
+    {
+        snprintf(command, 700, "cp %s /lib/firmware/j7-main-r5f%d_%d-fw", output_filename, (int)(pru_id/2) + 1, pru_id%2);
+        if (system(command) == -1)
+        {
+            return -1;
+        }
+    }  
     else 
     {
         snprintf(command, 700, "cp %s /lib/firmware/am335x-pru%d-fw", output_filename, pru_id);

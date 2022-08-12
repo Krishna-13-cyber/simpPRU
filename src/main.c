@@ -103,6 +103,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
             {
                 arguments->device_id = MODEL_BEAGLEBONE_AI;
             }
+            else if (!strcmp(arg, "bbai-64"))
+            {
+                arguments->device_id = MODEL_BEAGLEBONE_AI_64;
+            }
             else
             {
                 fprintf(stderr, "\e[31mfatal error:\e[0m incorrect beagleboard model\n");
@@ -186,7 +190,7 @@ int main(int argc, char** argv)
     {
         if (is_rpmsg_used == 1)
         {
-            if (arguments.pruid == 2 || arguments.pruid == 3)
+            if (arguments.pruid == 2 || arguments.pruid == 3 && arguments.device_id == MODEL_BEAGLEBONE_AI)
             {
                 snprintf(command, 700, "pru-gcc /tmp/temp.c -L%s/lib/ -lprurpmsg%d -o %s.pru%d -mmcu=am335x.pru%d -I%s/include/pru/  -DCONFIG_ENABLE_RPMSG=1 -D__AM572X_ICSS1_PRU%d__", TOSTRING(INSTALL_PATH), arguments.pruid%2, arguments.output_filename, arguments.pruid, arguments.pruid%2, TOSTRING(INSTALL_PATH), arguments.pruid%2);
             }
@@ -194,7 +198,14 @@ int main(int argc, char** argv)
             {
                 snprintf(command, 700, "pru-gcc /tmp/temp.c -L%s/lib/ -lprurpmsg%d -o %s.pru%d -mmcu=am335x.pru%d -I%s/include/pru/  -DCONFIG_ENABLE_RPMSG=1", TOSTRING(INSTALL_PATH), arguments.pruid%2, arguments.output_filename, arguments.pruid, arguments.pruid%2, TOSTRING(INSTALL_PATH));
             }
-            
+            if (arguments.pruid == 2 || arguments.pruid == 3 && arguments.device_id == MODEL_BEAGLEBONE_AI_64)
+            {
+                snprintf(command, 700, "pru-gcc /tmp/temp.c -L%s/lib/ -lprurpmsg%d -o %s.pru%d -mmcu=tda4vm.pru%d -I%s/include/pru/  -DCONFIG_ENABLE_RPMSG=1 -D__TDA4VM_ICSSG1_PRU%d__", TOSTRING(INSTALL_PATH), arguments.pruid%2, arguments.output_filename, arguments.pruid, arguments.pruid%2, TOSTRING(INSTALL_PATH), arguments.pruid%2);
+            }
+            else
+            {
+                snprintf(command, 700, "pru-gcc /tmp/temp.c -L%s/lib/ -lprurpmsg%d -o %s.pru%d -mmcu=tda4vm.pru%d -I%s/include/pru/  -DCONFIG_ENABLE_RPMSG=1", TOSTRING(INSTALL_PATH), arguments.pruid%2, arguments.output_filename, arguments.pruid, arguments.pruid%2, TOSTRING(INSTALL_PATH));
+            }
             if (system(command) == -1)
             {
                 fprintf(stderr, "\e[31mfatal error:\e[0m unable to call pru-gcc\n");
