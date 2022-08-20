@@ -200,11 +200,11 @@ int main(int argc, char** argv)
             }
             if (arguments.pruid == 2 || arguments.pruid == 3 && arguments.device_id == MODEL_BEAGLEBONE_AI_64)
             {
-                snprintf(command, 700, "pru-gcc /tmp/temp.c -L%s/lib/ -lprurpmsg%d -o %s.pru%d -mmcu=tda4vm.pru%d -I%s/include/pru/  -DCONFIG_ENABLE_RPMSG=1 -D__TDA4VM_ICSSG1_PRU%d__", TOSTRING(INSTALL_PATH), arguments.pruid%2, arguments.output_filename, arguments.pruid, arguments.pruid%2, TOSTRING(INSTALL_PATH), arguments.pruid%2);
+                snprintf(command, 700, "pru-gcc /tmp/temp.c -L%s/lib/ -lprurpmsg%d -o %s.pru%d -mmcu=tda4vm.icssg1.pru%d -I%s/include/pru/  -DCONFIG_ENABLE_RPMSG=1 -D__TDA4VM_ICSSG1_PRU%d__", TOSTRING(INSTALL_PATH), arguments.pruid%2, arguments.output_filename, arguments.pruid, arguments.pruid, arguments.pruid%2, TOSTRING(INSTALL_PATH), arguments.pruid%2);
             }
             else
             {
-                snprintf(command, 700, "pru-gcc /tmp/temp.c -L%s/lib/ -lprurpmsg%d -o %s.pru%d -mmcu=tda4vm.pru%d -I%s/include/pru/  -DCONFIG_ENABLE_RPMSG=1", TOSTRING(INSTALL_PATH), arguments.pruid%2, arguments.output_filename, arguments.pruid, arguments.pruid%2, TOSTRING(INSTALL_PATH));
+                snprintf(command, 700, "pru-gcc /tmp/temp.c -L%s/lib/ -lprurpmsg%d -o %s.pru%d -mmcu=tda4vm.icssg1.pru%d -I%s/include/pru/  -DCONFIG_ENABLE_RPMSG=1", TOSTRING(INSTALL_PATH), arguments.pruid%2, arguments.output_filename, arguments.pruid, arguments.pruid, arguments.pruid%2, TOSTRING(INSTALL_PATH));
             }
             if (system(command) == -1)
             {
